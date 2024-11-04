@@ -1,24 +1,29 @@
 import json
+import argparse
 from VKUser import VKUser
 
 def get_token(token_file):
     with open(token_file, 'r') as f:
         return f.read().strip()
 
-
 def save_to_json(data, filename):
     with open(filename, 'w', encoding='utf-8') as f:
         json.dump(data, f, ensure_ascii=False, indent=4)
 
+def main(token_file, user_id, output_file):
+    token = get_token(token_file)
+    vk_user = VKUser(token, user_id)
+    user_data = vk_user.get_user_info()
 
+    if user_data:
+        save_to_json(user_data, output_file)
+        print(f"Информация сохранена в файл {output_file}")
 
-token = get_token('token.txt')
-user_id = input("Введите ID пользователя или никнейм (или нажмите Enter для использования 'geroykachalki'): ") or "geroykachalki"
-output_file = input("Введите путь к файлу для сохранения информации (или нажмите Enter для использования 'user_info.json'): ") or 'user_info.json'
+if __name__ == "__main__":
+    parser = argparse.ArgumentParser(description="Получение информации о пользователе ВКонтакте.")
+    parser.add_argument('token_file', type=str, help="Путь к файлу с токеном")
+    parser.add_argument('--user_id', type=str, default="geroykachalki", help="ID пользователя или никнейм (по умолчанию 'geroykachalki')")
+    parser.add_argument('--output_file', type=str, default='user_info.json', help="Путь к файлу для сохранения информации (по умолчанию 'user_info.json')")
 
-vk_user = VKUser(token, user_id)
-user_data = vk_user.get_user_info()
-
-if user_data:
-    save_to_json(user_data, output_file)
-    print(f"Информация сохранена в файл {output_file}")
+    args = parser.parse_args()
+    main(args.token_file, args.user_id, args.output_file)
