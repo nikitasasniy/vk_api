@@ -4,6 +4,12 @@ from VKUser import VKUser
 from VKNeo4jDB import VKNeo4jDB
 from DataCollector import DataCollector
 from JSONHandler import JSONHandler
+from fastapi import FastAPI, Depends, HTTPException, status
+from typing import List
+from pydantic import BaseModel
+from neomodel import db
+
+app = FastAPI()
 
 def setup_logging(log_file):
     """Настройка логирования в файл."""
